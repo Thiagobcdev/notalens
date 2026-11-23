@@ -125,7 +125,7 @@ export type Recebimento = {
   recebidoEm: string;
 };
 
-export type Processado = { documentoId: string; status: string; decisao: Decisao | null; erro?: string };
+export type Processado = { documentoId: string; status: string; decisao: Decisao | null; origem?: "CLAUDE" | "GRAVADA"; modelo?: string | null; erro?: string };
 
 /**
  * Upload → extração (IA ou gravada) → normalização → regras → documento gravado.
@@ -185,6 +185,6 @@ export async function processarDocumento(db: Db, extrator: Extrator, r: Recebime
         dados: { status: decisao.status, regras: decisao.violacoes.map((v) => v.codigo) },
       },
     });
-    return { documentoId: criado.id, status: decisao.status, decisao };
+    return { documentoId: criado.id, status: decisao.status, decisao, origem: extracao.origem, modelo: extracao.modelo };
   });
 }

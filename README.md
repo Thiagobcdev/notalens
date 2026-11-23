@@ -27,6 +27,13 @@ npm run db:seed             # gera os PDFs em storage/ e amostras/ para testar o
 npm test
 ```
 
-Sem `ANTHROPIC_API_KEY`, a extração usa as respostas gravadas pelo seed: a demo inteira roda sem custo.
+Sem `ANTHROPIC_API_KEY`, a extração usa as respostas gravadas pelo seed: a demo inteira roda sem custo. Com a chave no `.env`, cada PDF enviado é lido pelo Claude (`claude-sonnet-5-5` por padrão, configurável em `ANTHROPIC_MODEL`).
+
+### Como a IA é usada
+- O PDF vai inteiro para a API como documento (base64) e a resposta volta num **JSON com schema fixo** (structured outputs), validado por Zod.
+- O modelo só **copia o texto impresso**; um campo ilegível vem como `null`. Converter "1.234,56" em centavos, conferir dígitos verificadores e somar itens é código determinístico, testado.
+- O texto do documento é tratado como dado. Um PDF com instruções escondidas, no máximo, produz campos errados, e as regras mandam para a revisão.
+- Recusa do modelo, resposta cortada, erro de API ou arquivo que não é NF-e nem boleto viram "falha de leitura", com o motivo, e nunca uma aprovação.
+- Cada extração registra modelo, tokens e tempo.
 
 Os PDFs são **fictícios** e marcados como "sem valor fiscal"; os CNPJs são válidos no formato, mas inventados.

@@ -15,6 +15,8 @@ export type ResultadoEnvio =
       urgente: boolean;
       exigeGestor: boolean;
       violacoes: { regra: string; mensagem: string; severidade: "BLOQUEIA" | "ALERTA" }[];
+      /** Quem leu: o Claude (com o modelo) ou a resposta gravada da demo. */
+      leitura: string | null;
       erro?: string;
     }
   | { ok: false; erro: string };
@@ -43,6 +45,7 @@ export async function enviarArquivo(form: FormData): Promise<ResultadoEnvio> {
       urgente: r.decisao?.urgente ?? false,
       exigeGestor: r.decisao?.exigeGestor ?? false,
       violacoes: (r.decisao?.violacoes ?? []).map(({ regra, mensagem, severidade }) => ({ regra, mensagem, severidade })),
+      leitura: r.origem === "CLAUDE" ? `Claude (${r.modelo})` : r.origem === "GRAVADA" ? "resposta gravada" : null,
       erro: r.erro,
     };
   } catch (e) {

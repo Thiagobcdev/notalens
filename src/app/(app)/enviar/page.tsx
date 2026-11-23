@@ -15,8 +15,9 @@ export default function EnviarPage() {
       </div>
       <Envio />
       <p className="text-xs text-muted">
-        Demonstração sem chave de API: a leitura usa as respostas gravadas pelo seed. Use os PDFs da pasta <code className="font-mono">amostras/</code>{" "}
-        (gerada por <code className="font-mono">npm run db:seed</code>) na ordem dos números.
+        Com <code className="font-mono">ANTHROPIC_API_KEY</code> no <code className="font-mono">.env</code>, cada PDF é lido pelo Claude. Sem a chave, a
+        leitura usa as respostas gravadas pelo seed: use os PDFs da pasta <code className="font-mono">amostras/</code> (gerada por{" "}
+        <code className="font-mono">npm run db:seed</code>) na ordem dos números.
       </p>
     </div>
   );

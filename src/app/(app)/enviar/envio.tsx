@@ -149,7 +149,10 @@ export function Envio() {
               <li key={i.id} className="flex flex-col gap-2 px-5 py-3 text-sm sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
                   <p className="truncate font-medium">{i.arquivo.name}</p>
-                  <p className="text-xs text-muted">{tamanho(i.arquivo.size)}</p>
+                  <p className="text-xs text-muted">
+                    {tamanho(i.arquivo.size)}
+                    {i.resultado?.ok && i.resultado.leitura && ` · lido por ${i.resultado.leitura}`}
+                  </p>
                   {i.resultado?.ok && i.resultado.violacoes.length > 0 && (
                     <ul className="mt-1 space-y-0.5 text-xs">
                       {i.resultado.violacoes.map((v, k) => (
