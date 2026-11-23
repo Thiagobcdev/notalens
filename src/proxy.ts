@@ -15,6 +15,8 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const sessao = await verificarSessao(request.cookies.get(COOKIE_SESSAO)?.value);
 
+  if (pathname === "/sair") return NextResponse.next();
+
   if (pathname === "/login") {
     return sessao ? NextResponse.redirect(new URL(HOME_DO_PAPEL[sessao.papel], request.url)) : NextResponse.next();
   }

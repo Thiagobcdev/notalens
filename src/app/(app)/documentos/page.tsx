@@ -214,11 +214,9 @@ function Situacao({ d }: { d: LinhaDocumento }) {
 function Acoes({ d }: { d: LinhaDocumento }) {
   return (
     <span className="inline-flex gap-3 text-sm">
-      {d.tipo && (
-        <Link href={`/revisao/${d.id}`} className="font-medium text-brand underline-offset-4 hover:underline">
-          {d.status === "EM_REVISAO" ? "Revisar" : "Detalhes"}
-        </Link>
-      )}
+      <Link href={`/revisao/${d.id}`} className="font-medium text-brand underline-offset-4 hover:underline">
+        {d.status === "EM_REVISAO" ? "Revisar" : "Detalhes"}
+      </Link>
       <a href={`/documentos/${d.id}/pdf`} target="_blank" rel="noopener" className="text-muted underline-offset-4 hover:underline">
         PDF<span className="sr-only"> de {d.nomeArquivo} (abre em nova aba)</span>
       </a>

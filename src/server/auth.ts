@@ -48,8 +48,9 @@ export async function getUsuarioAtual(): Promise<UsuarioAtual> {
     where: { id: sessao.usuarioId },
     select: { id: true, nome: true, email: true, papel: true },
   });
-  // Usuário removido ou papel alterado desde o login: sessão não vale mais.
-  if (!u || u.papel !== sessao.papel) redirect("/login");
+  // Usuário removido ou papel alterado desde o login: a sessão não vale mais. Vai para /sair, que apaga o
+  // cookie; mandar direto para /login criaria um laço (o proxy vê o token válido e devolve para cá).
+  if (!u || u.papel !== sessao.papel) redirect("/sair");
   return u;
 }
 

@@ -47,7 +47,7 @@ function camposObrigatorios(doc: Documento): Violacao[] {
     doc.tipo === "NFE"
       ? OBRIGATORIOS_NFE.filter((c) => doc[c] === null)
       : OBRIGATORIOS_BOLETO.filter((c) => doc[c] === null);
-  const out = faltando.map((campo) => v("V8", "CAMPO_AUSENTE", campo, BLOQUEIA, "A IA não conseguiu ler este campo."));
+  const out = faltando.map((campo) => v("V8", "CAMPO_AUSENTE", campo, BLOQUEIA, "Campo obrigatório vazio ou ilegível."));
   if (doc.tipo === "NFE") {
     if (doc.itens.length === 0) out.push(v("V8", "SEM_ITENS", "itens", BLOQUEIA, "Nenhum item foi lido na nota."));
     doc.itens.forEach((it, i) => {
