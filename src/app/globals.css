@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+/* Tema sóbrio de back-office. Verde = aprovado, vermelho = bloqueia, âmbar = alerta. */
+@theme {
+  --color-bg: #f6f7f9;
+  --color-surface: #ffffff;
+  --color-surface-2: #f1f3f6;
+  --color-line: #e3e6eb;
+  --color-fg: #14171c;
+  --color-muted: #5b6472;
+  --color-brand: #0e7c86;
+  --color-brand-fg: #ffffff;
+  --color-pos: #0f7a4a;
+  --color-pos-bg: #e6f5ee;
+  --color-neg: #b42318;
+  --color-neg-bg: #fdecea;
+  --color-warn: #8a5a00;
+  --color-warn-bg: #fff4dc;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #0e1116;
+    --color-surface: #161a21;
+    --color-surface-2: #1d222b;
+    --color-line: #2a313c;
+    --color-fg: #e8ebf0;
+    --color-muted: #9aa4b2;
+    --color-brand: #4fc3cc;
+    --color-brand-fg: #0e1116;
+    --color-pos: #4cc38a;
+    --color-pos-bg: #12291f;
+    --color-neg: #ff7a6e;
+    --color-neg-bg: #2e1715;
+    --color-warn: #f5b94a;
+    --color-warn-bg: #2c2312;
+  }
+}
+
+html {
+  background: var(--color-bg);
+  color: var(--color-fg);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Números de dinheiro alinham verticalmente em tabelas */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}

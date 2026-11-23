@@ -1,0 +1,23 @@
+# Postgres local do NotaLens.
+# Porta 5435 no host para não conflitar com outros Postgres na máquina (5432–5434).
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: notalens_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: notalens
+      POSTGRES_PASSWORD: notalens_dev
+      POSTGRES_DB: notalens
+    ports:
+      - "127.0.0.1:5435:5432"
+    volumes:
+      - notalens_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notalens -d notalens"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  notalens_data:
