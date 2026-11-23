@@ -46,3 +46,6 @@ next-env.d.ts
 
 # PDFs enviados (dados locais)
 /storage/
+
+# PDFs de exemplo gerados pelo seed
+/amostras/

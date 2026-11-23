@@ -208,9 +208,10 @@ function casarComNota(b: Boleto, ctx: Contexto): Violacao[] {
   if (b.beneficiarioCnpj === null || b.valorCentavos === null) return [];
   const cnpj = normalizarCnpj(b.beneficiarioCnpj);
   const notas = ctx.notas.filter((n) => n.emitenteCnpj === cnpj);
-  const parcela = notas.flatMap((n) => n.duplicatas).find((d) => d.valorCentavos === b.valorCentavos);
-  if (parcela) {
-    return b.vencimento !== null && parcela.vencimento !== b.vencimento
+  // Parcelas iguais são comuns (3 × R$ 500): casa primeiro por valor E vencimento.
+  const mesmoValor = notas.flatMap((n) => n.duplicatas).filter((d) => d.valorCentavos === b.valorCentavos);
+  if (mesmoValor.length > 0) {
+    return b.vencimento !== null && !mesmoValor.some((d) => d.vencimento === b.vencimento)
       ? [v("V6", "VENCIMENTO_DIFERENTE_DA_PARCELA", "vencimento", ALERTA, "O vencimento difere do da parcela na nota.")]
       : [];
   }

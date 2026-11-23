@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { normalizarChave } from "../chave-nfe";
 import { normalizar, type ExtracaoBruta } from "../extracao";
+import { paraBruto } from "../impressao";
 import { decidir, validarDocumento } from "../regras";
 import type { Documento } from "../tipos";
 import { boleto, contexto, DESCONHECIDO, FILIAL, FORNECEDOR, INATIVO, linha, nfe } from "./fixtures";
@@ -141,6 +142,11 @@ describe("V6 — fornecedor e casamento boleto ↔ nota", () => {
     expect(codigos(b)).toEqual([]);
   });
 
+  it("parcelas de mesmo valor: casa pela que tem o mesmo vencimento (sem alerta falso)", () => {
+    const b = boleto({ vencimento: "2027-01-05", linhaDigitavel: linha(52_500, "2027-01-05"), numeroDocumento: "4521/2" });
+    expect(codigos(b)).toEqual([]);
+  });
+
   it("valor que não é de nenhuma nota nem parcela", () => {
     const b = boleto({ valorCentavos: 70_000, linhaDigitavel: linha(70_000) });
     expect(codigos(b)).toEqual(["V6:SEM_NOTA@valorCentavos"]);
@@ -249,5 +255,13 @@ describe("normalização da extração (V10)", () => {
       numeroDocumento: "4521/1",
     });
     expect(doc).toEqual(boleto());
+  });
+});
+
+describe("impressão ↔ normalização", () => {
+  it("imprimir e ler de volta dá o mesmo documento (NF-e e boleto)", () => {
+    for (const doc of [nfe(), boleto(), nfe({ totalNotaCentavos: 123_456_789 })]) {
+      expect(normalizar(paraBruto(doc))).toEqual(doc);
+    }
   });
 });

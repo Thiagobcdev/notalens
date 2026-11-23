@@ -66,7 +66,8 @@ export type Violacao = {
 export type NotaConhecida = {
   emitenteCnpj: string;
   numero: number;
-  totalNotaCentavos: number;
+  /** null se a nota ainda está com o total ilegível (as parcelas continuam valendo). */
+  totalNotaCentavos: number | null;
   duplicatas: { valorCentavos: number; vencimento: string }[];
 };
 

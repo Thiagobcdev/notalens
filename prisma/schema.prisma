@@ -1,0 +1,184 @@
+// NotaLens — modelo de dados.
+// Convenções:
+//  - Dinheiro SEMPRE em centavos (Int). Nunca Float/Decimal.
+//  - Datas de negócio em @db.Date (sem hora/fuso).
+//  - Chave de NF-e, linha digitável e hash NÃO são únicos no banco: um documento duplicado
+//    precisa ser gravado para ir à revisão. A duplicidade é a regra V4, checada numa transação.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Papel {
+  ANALISTA
+  GESTOR
+}
+
+enum TipoDocumento {
+  NFE
+  BOLETO
+}
+
+enum StatusDocumento {
+  APROVADO_AUTO   // passou em todas as regras e está dentro da alçada
+  EM_REVISAO      // alguma regra bloqueou (ou V9): espera uma pessoa
+  APROVADO        // aprovado na revisão
+  REJEITADO       // rejeitado na revisão, com motivo
+  FALHA_EXTRACAO  // a IA não devolveu nada utilizável
+}
+
+enum OrigemExtracao {
+  CLAUDE   // chamada real à API
+  GRAVADA  // resposta gravada pelo seed (demo sem chave)
+}
+
+enum Severidade {
+  BLOQUEIA
+  ALERTA
+}
+
+model Empresa {
+  id    String @id @default(cuid())
+  nome  String
+  cnpjs Cnpj[]
+}
+
+/// CNPJs das empresas do grupo (destinatário/pagador válidos, V1).
+model Cnpj {
+  cnpj      String  @id
+  descricao String
+  empresa   Empresa @relation(fields: [empresaId], references: [id])
+  empresaId String
+}
+
+model Fornecedor {
+  id         String      @id @default(cuid())
+  cnpj       String      @unique
+  nome       String
+  ativo      Boolean     @default(true)
+  documentos Documento[]
+  criadoEm   DateTime    @default(now())
+}
+
+model Usuario {
+  id         String      @id @default(cuid())
+  nome       String
+  email      String      @unique
+  senhaHash  String
+  papel      Papel
+  enviados   Documento[] @relation("enviadoPor")
+  decididos  Documento[] @relation("decididoPor")
+  correcoes  Correcao[]
+  auditoria  Auditoria[]
+  criadoEm   DateTime    @default(now())
+}
+
+model Documento {
+  id             String          @id @default(cuid())
+  /// null só quando a extração falhou (não se sabe o que é).
+  tipo           TipoDocumento?
+  status         StatusDocumento
+  nomeArquivo    String
+  hashArquivo    String
+  tamanhoBytes   Int
+  recebidoEm     DateTime        @db.Date
+  enviadoPor     Usuario         @relation("enviadoPor", fields: [enviadoPorId], references: [id])
+  enviadoPorId   String
+
+  // Campos de busca, copiados de `dados` (o documento normalizado e corrigido).
+  fornecedor     Fornecedor?     @relation(fields: [fornecedorId], references: [id])
+  fornecedorId   String?
+  chaveAcesso    String?
+  linhaDigitavel String?
+  numero         String?
+  valorCentavos  Int?
+  vencimento     DateTime?       @db.Date
+  urgente        Boolean         @default(false)
+  exigeGestor    Boolean         @default(false)
+  /// Documento normalizado (tipos.ts). Começa igual à extração e recebe as correções da revisão.
+  dados          Json?
+
+  decididoPor    Usuario?        @relation("decididoPor", fields: [decididoPorId], references: [id])
+  decididoPorId  String?
+  decididoEm     DateTime?
+  /// Motivo da rejeição, erro da extração ou justificativa do gestor ao aprovar apesar de uma regra.
+  motivo         String?
+
+  extracao       Extracao?
+  violacoes      ResultadoRegra[]
+  correcoes      Correcao[]
+  criadoEm       DateTime        @default(now())
+
+  @@index([status, recebidoEm])
+  @@index([hashArquivo])
+  @@index([chaveAcesso])
+  @@index([linhaDigitavel])
+  @@index([fornecedorId])
+}
+
+/// O que a IA devolveu, sem mexer: base para medir o acerto por campo.
+model Extracao {
+  id            String         @id @default(cuid())
+  documento     Documento      @relation(fields: [documentoId], references: [id], onDelete: Cascade)
+  documentoId   String         @unique
+  origem        OrigemExtracao
+  modelo        String?
+  bruto         Json
+  tokensEntrada Int?
+  tokensSaida   Int?
+  duracaoMs     Int?
+  criadoEm      DateTime       @default(now())
+}
+
+/// Violações atuais do documento (recalculadas a cada correção).
+model ResultadoRegra {
+  id          String     @id @default(cuid())
+  documento   Documento  @relation(fields: [documentoId], references: [id], onDelete: Cascade)
+  documentoId String
+  regra       String
+  codigo      String
+  campo       String
+  severidade  Severidade
+  mensagem    String
+
+  @@index([documentoId])
+}
+
+/// Campo corrigido na revisão: valor que a IA leu × valor final.
+model Correcao {
+  id          String    @id @default(cuid())
+  documento   Documento @relation(fields: [documentoId], references: [id], onDelete: Cascade)
+  documentoId String
+  campo       String
+  valorIa     String?
+  valorFinal  String?
+  usuario     Usuario   @relation(fields: [usuarioId], references: [id])
+  usuarioId   String
+  em          DateTime  @default(now())
+
+  @@index([campo])
+}
+
+/// Respostas da IA gravadas por hash do PDF. O ExtratorGravado lê daqui (demo sem chave de API).
+model ExtracaoGravada {
+  hashArquivo String @id
+  bruto       Json
+}
+
+model Auditoria {
+  id         String   @id @default(cuid())
+  em         DateTime @default(now())
+  usuario    Usuario? @relation(fields: [usuarioId], references: [id])
+  usuarioId  String?
+  acao       String
+  entidade   String
+  entidadeId String
+  dados      Json?
+
+  @@index([entidade, entidadeId])
+}
