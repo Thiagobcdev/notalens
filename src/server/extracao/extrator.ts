@@ -29,7 +29,7 @@ export class ExtratorGravado implements Extrator {
     const gravada = await this.db.extracaoGravada.findUnique({ where: { hashArquivo: hash } });
     if (!gravada) {
       throw new ErroDeExtracao(
-        "Sem extração gravada para este arquivo. Use os PDFs de `amostras/` ou configure ANTHROPIC_API_KEY para a extração real.",
+        "Sem extração gravada para este arquivo. Use os PDFs da pasta amostras ou configure ANTHROPIC_API_KEY para a extração real.",
       );
     }
     const bruto = extracaoBrutaSchema.safeParse(gravada.bruto);
