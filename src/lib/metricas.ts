@@ -12,7 +12,7 @@ type Tipo = "NFE" | "BOLETO";
 /** Preço por milhão de tokens, em centavos de dólar (entrada, saída). Fonte: tabela pública da Anthropic. */
 export const PRECOS: { prefixo: string; entrada: number; saida: number }[] = [
   { prefixo: "claude-sonnet-5", entrada: 200, saida: 1000 }, // Sonnet 5 e 5.5: US$ 2 / US$ 10
-  { prefixo: "claude-opus-5", entrada: 400, saida: 2000 }, // Opus 5.5: US$ 4 / US$ 20
+  { prefixo: "claude-opus-5-5", entrada: 400, saida: 2000 }, // Opus 5.5: US$ 4 / US$ 20
   { prefixo: "claude-haiku-5", entrada: 10, saida: 50 }, // Haiku 5.5: US$ 0,10 / US$ 0,50 (até 100K tokens)
 ];
 

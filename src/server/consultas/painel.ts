@@ -21,7 +21,7 @@ export async function getPainel(periodo: Periodo) {
   const inicio = desde(periodo, hoje);
   const noPeriodo = inicio ? { recebidoEm: { gte: inicio } } : {};
 
-  const [docs, correcoes, recebimentos, alcada, naAlcada] = await Promise.all([
+  const [docs, correcoes, recebimentos, alcada, naAlcada, naFila] = await Promise.all([
     prisma.documento.findMany({
       where: noPeriodo,
       select: {
@@ -50,6 +50,8 @@ export async function getPainel(periodo: Periodo) {
       select: { id: true, tipo: true, numero: true, valorCentavos: true, vencimento: true, urgente: true, recebidoEm: true, fornecedor: { select: { nome: true } } },
     }),
     prisma.documento.count({ where: { status: "EM_REVISAO", exigeGestor: true } }),
+    // A fila é a de agora, inteira: não depende do período escolhido.
+    prisma.documento.count({ where: { status: "EM_REVISAO" } }),
   ]);
 
   // ---- volume e aprovação automática
@@ -123,6 +125,7 @@ export async function getPainel(periodo: Periodo) {
     revisao,
     alcada: alcada.map((d) => ({ ...d, recebidoEm: isoDeData(d.recebidoEm), vencimento: d.vencimento ? isoDeData(d.vencimento) : null })),
     naAlcada,
+    naFila,
   };
 }
 

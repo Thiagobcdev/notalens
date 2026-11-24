@@ -101,7 +101,7 @@ Decisões:
 
 **Duplicidade sem condição de corrida.** As regras rodam dentro de uma transação `Serializable`, repetida em caso de conflito. Assim, duas pessoas enviando a mesma nota ao mesmo tempo não passam as duas pela V4.
 
-**O seed é um teste de ponta a ponta.** Ele gera ~195 PDFs de DANFE e boleto com `pdf-lib` e grava, para cada um, a resposta da "IA", incluindo leituras erradas de propósito. Os defeitos também são de propósito: soma que não fecha, nota duplicada, boleto vencido, boleto falso de um CNPJ fora do cadastro e fornecedor inativo. Tudo passa pelo mesmo pipeline da aplicação. Se alguma regra produzir um resultado diferente do planejado para aquele defeito, o seed para com erro.
+**O seed é um teste de ponta a ponta.** Ele gera ~195 PDFs de DANFE e boleto com `pdf-lib` e grava, para cada um, a resposta da "IA", incluindo leituras erradas de propósito. Os defeitos também são de propósito: soma que não fecha, nota duplicada, boleto vencido, boleto falso de um CNPJ fora do cadastro e fornecedor inativo. Tudo passa pelo mesmo pipeline da aplicação. Se alguma regra produzir um resultado diferente do planejado para aquele defeito, o seed termina com erro.
 
 **Segurança.**
 - O upload só aceita PDF (assinatura `%PDF`, até 5 MB), guardado pelo hash.

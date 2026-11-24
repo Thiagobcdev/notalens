@@ -70,7 +70,7 @@ async function Conteudo({ searchParams }: { searchParams: PageProps<"/painel">["
           value={p.aprovados ? porcento(p.aprovadosSemCorrecao / p.aprovados) : "—"}
           hint={`${inteiro(p.aprovadosSemCorrecao)} de ${inteiro(p.aprovados)} aprovados`}
         />
-        <Stat label="Na fila agora" value={inteiro(p.status.EM_REVISAO)} hint={p.naAlcada ? `${p.naAlcada} na sua alçada` : "nenhum na sua alçada"} />
+        <Stat label="Na fila agora" value={inteiro(p.naFila)} hint={p.naAlcada ? `${p.naAlcada} na sua alçada` : "nenhum na sua alçada"} />
       </Card>
 
       {p.naAlcada > 0 && <Alcada p={p} />}
