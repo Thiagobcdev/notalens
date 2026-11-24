@@ -43,5 +43,5 @@ export async function verificarSessao(token: string | undefined): Promise<DadosS
 /** Página inicial de cada papel. */
 export const HOME_DO_PAPEL: Record<PapelSessao, string> = {
   ANALISTA: "/documentos",
-  GESTOR: "/documentos",
+  GESTOR: "/painel",
 };

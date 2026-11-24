@@ -11,8 +11,10 @@ const NAV = {
     { href: "/enviar", label: "Enviar PDFs" },
   ],
   GESTOR: [
+    { href: "/painel", label: "Painel" },
     { href: "/documentos", label: "Documentos", fila: true },
     { href: "/enviar", label: "Enviar PDFs" },
+    { href: "/fornecedores", label: "Fornecedores" },
   ],
 } as const;
 
@@ -23,12 +25,12 @@ async function Navegacao() {
   const [u, naFila] = await Promise.all([getUsuarioAtual(), prisma.documento.count({ where: { status: "EM_REVISAO" } })]);
   return (
     <>
-      <nav aria-label="Principal" className="flex gap-1 md:flex-col">
+      <nav aria-label="Principal" className="-mx-1 flex gap-1 overflow-x-auto px-1 [scrollbar-width:none] md:mx-0 md:flex-col md:overflow-visible md:px-0">
         {NAV[u.papel].map((item) => (
           <Link
             key={item.href}
             href={item.href}
-            className="flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm font-medium hover:bg-surface-2"
+            className="flex shrink-0 items-center justify-between gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium hover:bg-surface-2"
           >
             {item.label}
             {"fila" in item && naFila > 0 && (

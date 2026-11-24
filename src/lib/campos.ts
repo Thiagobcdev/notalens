@@ -65,3 +65,10 @@ export function formatarValorCampo(campo: string, json: string | null): string {
   }
   return JSON.stringify(v);
 }
+
+/** Campo agrupado, sem índice: "itens.quantidade" → "Itens · Quantidade", "totalNotaCentavos" → "Total da nota". */
+export function rotuloCampoGenerico(campo: string): string {
+  const partes = campoBruto(campo).split(".");
+  if (partes.length === 2) return `${ROTULOS[partes[0]] ?? partes[0]} · ${ROTULOS[partes[1]] ?? partes[1]}`;
+  return ROTULOS[partes[0]] ?? campo;
+}
