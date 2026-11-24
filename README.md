@@ -12,6 +12,16 @@ Extração de notas fiscais (DANFE da NF-e) e boletos com IA, **conferida por re
   - totais da nota com tolerância por item, duplicidade, casamento boleto ↔ nota, vencimento e alçada.
 
 - Banco (PostgreSQL + Prisma) e **pipeline** em `src/server/`: PDF → extração → normalização → regras numa transação serializável → documento. Revisão: corrigir (com registro do que a IA leu × valor final), aprovar (alçada e justificativa do gestor) e rejeitar.
+- Telas:
+  - `/documentos` (fila e abas por situação) e `/enviar` (upload em lote);
+  - `/revisao/[id]`: PDF ao lado dos campos, com as regras rodando no navegador a cada edição;
+  - `/painel`, só para a gestora:
+    - aprovação automática por semana;
+    - por que os documentos vão para a revisão (regras na chegada);
+    - acerto da IA por campo;
+    - tempo e custo estimado por leitura real;
+    - fila da alçada;
+  - `/fornecedores`, só para a gestora: o cadastro que a regra V6 consulta, com CNPJ alfanumérico.
 - **Seed** do Grupo Vértice (fictício): ~195 PDFs de DANFE e boleto gerados com `pdf-lib`, com defeitos de propósito (soma que não fecha, nota duplicada, boleto vencido, boleto falso, fornecedor descredenciado) e leituras erradas da "IA". Todos passam pelo mesmo pipeline da aplicação; as revisões antigas são resolvidas e as da última semana ficam na fila.
 
 ## Rodar localmente
